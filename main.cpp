@@ -56,6 +56,7 @@ Purpose:  This project will show you the difference between member functions and
 
 #include <iostream>
 #include <string>
+#include <cmath>
 struct T
 {
     int value;
@@ -72,39 +73,44 @@ struct Comparator                                //4
 {
     T* compare(T* a, T* b) // 5
     {
-        if( a->value < b->value ) return a;
-        if( a->value > b->value ) return b;
+        if (a != nullptr && b != nullptr)
+        {
+            if( a->value < b->value ) return a;
+            if( a->value > b->value ) return b;
+        }
         return nullptr;
     }
 };
 
-// struct U
-// {
-//     float <#name1#> { 0 }, <#name2#> { 0 };
-//     <#returnType#> <#memberFunction#>(<#type name#>* <#updatedValue#>)      //12
-//     {
+struct U
+{
+    float target { 0 }, currentValue { 0 };
+    // <#returnType#> <#memberFunction#>(<#type name#>* <#updatedValue#>)      //12
+    // {
         
-//     }
-// };
+    // }
+};
 
-// struct <#structname2#>
-// {
-//     static <#returntype#> <#staticFunctionA#>(U* that, <#type name#>* <#updatedValue#> )        //10
-//     {
-//         std::cout << "U's <#name1#> value: " << that-><#name1#> << std::endl;
-//         that-><#name1#> = <#updatedValue#>;
-//         std::cout << "U's <#name1#> updated value: " << that-><#name1#> << std::endl;
-//         while( std::abs(that-><#name2#> - that-><#name1#>) > 0.001f )
-//         {
-//             /*
-//              write something that makes the distance between that-><#name2#> and that-><#name1#> get smaller
-//              */
-//             that-><#name2#> += ;
-//         }
-//         std::cout << "U's <#name2#> updated value: " << that-><#name2#> << std::endl;
-//         return that-><#name2#> * that-><#name1#>;
-//     }
-// };
+struct Updater
+{
+    static float updateAndMultiply(U* that, float* updatedValuePtr )        //10
+    {
+        if (that == nullptr) return std::nanf("");
+        std::cout << "U's currentValue value: " << that->target << std::endl;
+        if (updatedValuePtr != nullptr) that->target = *updatedValuePtr;
+        std::cout << "U's target updated value: " << that->target << std::endl;
+        
+        while( std::abs(that->currentValue - that->target) > 0.001f )
+        {
+            /*
+             write something that makes the distance between that->currentValue and that->target get smaller
+             */
+            that->currentValue += (that->target - that->currentValue) * 0.5f;
+        }
+        std::cout << "U's currentValue updated value: " << that->currentValue << std::endl;
+        return that->currentValue * that->target;
+    }
+};
         
 /*
  MAKE SURE YOU ARE NOT ON THE MASTER BRANCH
@@ -133,12 +139,12 @@ int main()
     }
     else
     {
-        std::cout << "both are equal" << std::endl;
+        std::cout << "both are equal or at least one argument is the nullptr" << std::endl;
     }
     
-    // U <#name3#>;
-    // float updatedValue = 5.f;
-    // std::cout << "[static func] <#name3#>'s multiplied values: " << <#structname2#>::<#staticFunctionA#>( , ) << std::endl;                  //11
+    U u1;
+    float updatedValue = 5.f;
+    std::cout << "[static func] u1's multiplied values: " << Updater::updateAndMultiply(&u1, &updatedValue) << std::endl;                  //11
     
     // U <#name4#>;
     // std::cout << "[member func] <#name4#>'s multiplied values: " << <#name4#>.<#memberFunction#>( &updatedValue ) << std::endl;
