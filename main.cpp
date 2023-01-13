@@ -85,19 +85,17 @@ struct Comparator                                //4
 struct U
 {
     float target { 0 }, currentValue { 0 };
-    // <#returnType#> <#memberFunction#>(<#type name#>* <#updatedValue#>)      //12
-    // {
-        
-    // }
+    float updateAndMultiply(float* updatedValuePtr);      //12
 };
 
 struct Updater
 {
-    static float updateAndMultiply(U* that, float* updatedValuePtr )        //10
+    static float updateAndMultiply(U* that, float* updatedValuePtr ) //10
     {
-        if (that == nullptr) return std::nanf("");
+        if (that == nullptr || updatedValuePtr == nullptr) return std::nanf("");
+        
         std::cout << "U's currentValue value: " << that->target << std::endl;
-        if (updatedValuePtr != nullptr) that->target = *updatedValuePtr;
+        that->target = *updatedValuePtr;
         std::cout << "U's target updated value: " << that->target << std::endl;
         
         while( std::abs(that->currentValue - that->target) > 0.001f )
@@ -111,6 +109,11 @@ struct Updater
         return that->currentValue * that->target;
     }
 };
+
+float U::updateAndMultiply(float* updatedValuePtr)
+{
+    return Updater::updateAndMultiply(this, updatedValuePtr);
+}
         
 /*
  MAKE SURE YOU ARE NOT ON THE MASTER BRANCH
@@ -146,6 +149,6 @@ int main()
     float updatedValue = 5.f;
     std::cout << "[static func] u1's multiplied values: " << Updater::updateAndMultiply(&u1, &updatedValue) << std::endl;                  //11
     
-    // U <#name4#>;
-    // std::cout << "[member func] <#name4#>'s multiplied values: " << <#name4#>.<#memberFunction#>( &updatedValue ) << std::endl;
+    U u2;
+    std::cout << "[member func] u2's multiplied values: " << u2.updateAndMultiply( &updatedValue ) << std::endl;
 }
