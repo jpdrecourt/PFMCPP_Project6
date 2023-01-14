@@ -41,13 +41,10 @@ struct T
 
 struct Comparator                                //4
 {
-    T* compare(T* a, T* b) // 5
+    T* compare(T& a, T& b) const // 5
     {
-        if (a != nullptr && b != nullptr)
-        {
-            if( a->value < b->value ) return a;
-            if( a->value > b->value ) return b;
-        }
+        if( a.value < b.value ) return &a;
+        if( a.value > b.value ) return &b;
         return nullptr;
     }
 };
@@ -55,35 +52,32 @@ struct Comparator                                //4
 struct U
 {
     float target { 0 }, currentValue { 0 };
-    float updateAndMultiply(float* updatedValuePtr);      //12
+    float updateAndMultiply(const float& updatedValueRef);      //12
 };
 
 struct Updater
 {
-    static float updateAndMultiply(U* that, float* updatedValuePtr ) //10
+    static float updateAndMultiply(U& that, const float& updatedValueRef ) //10
     {
-        if (that == nullptr || updatedValuePtr == nullptr) 
-            return 0;
+        std::cout << "U's currentValue value: " << that.target << std::endl;
+        that.target = updatedValueRef;
+        std::cout << "U's target updated value: " << that.target << std::endl;
         
-        std::cout << "U's currentValue value: " << that->target << std::endl;
-        that->target = *updatedValuePtr;
-        std::cout << "U's target updated value: " << that->target << std::endl;
-        
-        while( std::abs(that->currentValue - that->target) > 0.001f )
+        while( std::abs(that.currentValue - that.target) > 0.001f )
         {
             /*
              write something that makes the distance between that->currentValue and that->target get smaller
              */
-            that->currentValue += (that->target - that->currentValue) * 0.5f;
+            that.currentValue += (that.target - that.currentValue) * 0.5f;
         }
-        std::cout << "U's currentValue updated value: " << that->currentValue << std::endl;
-        return that->currentValue * that->target;
+        std::cout << "U's currentValue updated value: " << that.currentValue << std::endl;
+        return that.currentValue * that.target;
     }
 };
 
-float U::updateAndMultiply(float* updatedValuePtr)
+float U::updateAndMultiply(const float& updatedValueRef)
 {
-    return Updater::updateAndMultiply(this, updatedValuePtr);
+    return Updater::updateAndMultiply(*this, updatedValueRef);
 }
         
 /*
@@ -106,20 +100,20 @@ int main()
     T t2(7 , "t2");                                             //6
     
     Comparator f;                                            //7
-    auto* smaller = f.compare(&t1 , &t2);   //8
+    auto* smaller = f.compare(t1 , t2);   //8
     if (smaller != nullptr)
     {
         std::cout << "the smaller one is << " << smaller->name << std::endl; //9    
     }
     else
     {
-        std::cout << "both are equal or at least one argument is the nullptr" << std::endl;
+        std::cout << "both are equal" << std::endl;
     }
     
     U u1;
     float updatedValue = 5.f;
-    std::cout << "[static func] u1's multiplied values: " << Updater::updateAndMultiply(&u1, &updatedValue) << std::endl;                  //11
+    std::cout << "[static func] u1's multiplied values: " << Updater::updateAndMultiply(u1, updatedValue) << std::endl;                  //11
     
     U u2;
-    std::cout << "[member func] u2's multiplied values: " << u2.updateAndMultiply( &updatedValue ) << std::endl;
+    std::cout << "[member func] u2's multiplied values: " << u2.updateAndMultiply( updatedValue ) << std::endl;
 }
