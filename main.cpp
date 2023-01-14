@@ -56,7 +56,6 @@ Purpose:  This project will show you the difference between member functions and
 
 #include <iostream>
 #include <string>
-#include <cmath>
 struct T
 {
     int value;
@@ -92,7 +91,8 @@ struct Updater
 {
     static float updateAndMultiply(U* that, float* updatedValuePtr ) //10
     {
-        if (that == nullptr || updatedValuePtr == nullptr) return std::nanf("");
+        if (that == nullptr || updatedValuePtr == nullptr) 
+            return 0;
         
         std::cout << "U's currentValue value: " << that->target << std::endl;
         that->target = *updatedValuePtr;
